@@ -28,14 +28,34 @@ func parse(re []rune, i int) (st *StateTree, err error) {
 		}
 		switch re[i] {
 		case 'd', 'D':
-			st.State = State{Type: StateTypeDigit}
+			st.State = StateChar{Type: StateTypeDigit}
 		case 'w', 'W':
-			st.State = State{Type: StateTypeAlpha}
+			st.State = StateChar{Type: StateTypeAlpha}
 		default:
-			return nil, fmt.Errorf("escape sequence at position %d", i)
+			return nil, fmt.Errorf("unknown sequence at position %d", i)
 		}
+	case '[':
+		i++
+		var state StateGroup
+		if re[i] == '^' {
+			state = StateGroup{Type: StateTypeGroupNegative}
+			i++
+		} else {
+			state = StateGroup{Type: StateTypeGroupPositive}
+		}
+		for {
+			if i >= len(re) {
+				return nil, fmt.Errorf("cannot find closing bracket at position %d", i)
+			}
+			if re[i] == ']' {
+				break
+			}
+			state.Chars = append(state.Chars, re[i])
+			i++
+		}
+		st.State = state
 	default:
-		st.State = State{Type: StateTypeChar, Char: re[i]}
+		st.State = StateChar{Type: StateTypeChar, Char: re[i]}
 	}
 
 	if i+1 < len(re) {

@@ -1,6 +1,6 @@
 package statetree
 
-// state types
+// StateChar types
 const (
 	StateTypeAny = iota
 	StateTypeChar
@@ -8,9 +8,24 @@ const (
 	StateTypeDigit
 )
 
-type State struct {
+type StateChar struct {
 	Type int
 	Char rune
+}
+
+// StateGroup types
+const (
+	StateTypeGroupPositive = iota
+	StateTypeGroupNegative
+)
+
+type StateGroup struct {
+	Type  int
+	Chars []rune
+}
+
+type State interface {
+	Match(*[]rune, int) (bool, int)
 }
 
 type StateTree struct {

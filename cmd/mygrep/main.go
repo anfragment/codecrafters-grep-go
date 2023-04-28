@@ -4,6 +4,7 @@ import (
 	// Uncomment this to pass the first stage
 	// "bytes"
 
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -44,5 +45,6 @@ func matchLine(line []byte, pattern string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("parse pattern: %w", err)
 	}
-	return st.Match(line), nil
+	runes := bytes.Runes(line)
+	return st.Match(&runes), nil
 }

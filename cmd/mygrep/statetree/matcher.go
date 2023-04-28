@@ -4,28 +4,58 @@ import (
 	"unicode"
 )
 
-func (st State) Match(r rune) bool {
+func (st StateChar) Match(line *[]rune, i int) (match bool, skip int) {
+	skip = 1
+	r := (*line)[i]
 	switch st.Type {
 	case StateTypeAny:
-		return true
+		return true, skip
 	case StateTypeChar:
-		return r == st.Char
+		return r == st.Char, skip
 	case StateTypeAlpha:
-		return unicode.IsLetter(r)
+		return unicode.IsLetter(r), skip
 	case StateTypeDigit:
-		return unicode.IsDigit(r)
+		return unicode.IsDigit(r), skip
 	default:
-		return false
+		return false, skip
 	}
 }
 
-func (st StateTree) Match(line []byte) bool {
-	for i := 0; i < len(line); i++ {
-		if st.State.Match(rune(line[i])) {
+func (st StateGroup) Match(line *[]rune, i int) (match bool, skip int) {
+	skip = 1
+	r := (*line)[i]
+	switch st.Type {
+	case StateTypeGroupPositive:
+		for _, c := range st.Chars {
+			if r == c {
+				return true, skip
+			}
+		}
+		return false, 1
+	case StateTypeGroupNegative:
+		for _, c := range st.Chars {
+			if r == c {
+				return false, skip
+			}
+		}
+		return true, skip
+	default:
+		return false, skip
+	}
+}
+
+func (st StateTree) Match(line *[]rune) bool {
+	for i := 0; i < len(*line); i++ {
+		for j := i; j < len(*line); {
+			st := st
+			match, skip := st.State.Match(line, j)
+			if !match {
+				break
+			}
+			j += skip
 			if len(st.Children) == 0 {
 				return true
 			} else {
-				// TODO: multiple children
 				st = *st.Children[0]
 			}
 		}
