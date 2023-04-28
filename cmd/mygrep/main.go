@@ -3,6 +3,7 @@ package main
 import (
 	// Uncomment this to pass the first stage
 	// "bytes"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -42,13 +43,7 @@ func matchLine(line []byte, pattern string) (bool, error) {
 		return false, fmt.Errorf("unsupported pattern: %q", pattern)
 	}
 
-	var ok bool
-
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
-	fmt.Println("Logs from your program will appear here!")
-
-	// Uncomment this to pass the first stage
-	// ok = bytes.ContainsAny(line, pattern)
+	ok := bytes.ContainsAny(line, pattern)
 
 	return ok, nil
 }
