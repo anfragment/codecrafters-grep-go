@@ -3,11 +3,12 @@ package main
 import (
 	// Uncomment this to pass the first stage
 	// "bytes"
-	"bytes"
+
 	"fmt"
 	"io"
 	"os"
-	"unicode/utf8"
+
+	"github.com/codecrafters-io/grep-starter-go/cmd/mygrep/statetree"
 )
 
 // Usage: echo <input_text> | your_grep.sh -E <pattern>
@@ -39,11 +40,9 @@ func main() {
 }
 
 func matchLine(line []byte, pattern string) (bool, error) {
-	if utf8.RuneCountInString(pattern) != 1 {
-		return false, fmt.Errorf("unsupported pattern: %q", pattern)
+	st, err := statetree.NewStateTree(pattern)
+	if err != nil {
+		return false, fmt.Errorf("parse pattern: %w", err)
 	}
-
-	ok := bytes.ContainsAny(line, pattern)
-
-	return ok, nil
+	return st.Match(line), nil
 }
