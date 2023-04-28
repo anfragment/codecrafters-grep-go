@@ -27,10 +27,10 @@ func parse(re []rune, i int) (st *StateTree, err error) {
 			return nil, fmt.Errorf("escape sequence at position %d", i)
 		}
 		switch re[i] {
-		case 'd':
+		case 'd', 'D':
 			st.State = State{Type: StateTypeDigit}
-		case 'D':
-			st.State = State{Type: StateTypeDigit}
+		case 'w', 'W':
+			st.State = State{Type: StateTypeAlpha}
 		default:
 			return nil, fmt.Errorf("escape sequence at position %d", i)
 		}
