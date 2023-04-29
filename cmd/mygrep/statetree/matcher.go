@@ -47,17 +47,15 @@ func (st StateGroup) Match(line *[]rune, i int) (match bool, skip int) {
 func (st StateTree) Match(line *[]rune) bool {
 	for i := 0; i < len(*line); i++ {
 		for j := i; j < len(*line); {
-			st := st
 			match, skip := st.State.Match(line, j)
 			if !match {
 				break
 			}
-			j += skip
 			if len(st.Children) == 0 {
 				return true
-			} else {
-				st = *st.Children[0]
 			}
+			j += skip
+			st = *st.Children[0]
 		}
 	}
 	return false
