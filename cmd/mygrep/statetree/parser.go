@@ -21,6 +21,8 @@ func compile(re []rune, i int) (st *StateTree, err error) {
 	}
 	st = &StateTree{}
 	switch re[i] {
+	case '^':
+		st.State = StateStart{}
 	case '\\':
 		i++
 		if i >= len(re) {

@@ -24,6 +24,8 @@ type StateGroup struct {
 	Chars []rune
 }
 
+type StateStart struct{}
+
 type State interface {
 	Match(*[]rune, int) (bool, int)
 }

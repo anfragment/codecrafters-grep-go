@@ -44,8 +44,13 @@ func (st StateGroup) Match(line *[]rune, i int) (match bool, skip int) {
 	}
 }
 
+func (st StateStart) Match(line *[]rune, i int) (match bool, skip int) {
+	return i == 0, 0
+}
+
 func (st StateTree) Match(line *[]rune) bool {
 	for i := 0; i < len(*line); i++ {
+		st := st
 		for j := i; j < len(*line); {
 			match, skip := st.State.Match(line, j)
 			if !match {
