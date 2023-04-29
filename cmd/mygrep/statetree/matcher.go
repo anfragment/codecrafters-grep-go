@@ -48,6 +48,10 @@ func (st StateStart) Match(line *[]rune, i int) (match bool, skip int) {
 	return i == 0, 0
 }
 
+func (st StateEnd) Match(line *[]rune, i int) (match bool, skip int) {
+	return i == len(*line)-1, 0
+}
+
 func (st StateTree) Match(line *[]rune) bool {
 	for i := 0; i < len(*line); i++ {
 		st := st

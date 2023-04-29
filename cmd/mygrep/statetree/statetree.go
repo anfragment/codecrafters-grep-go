@@ -26,6 +26,8 @@ type StateGroup struct {
 
 type StateStart struct{}
 
+type StateEnd struct{}
+
 type State interface {
 	Match(*[]rune, int) (bool, int)
 }
