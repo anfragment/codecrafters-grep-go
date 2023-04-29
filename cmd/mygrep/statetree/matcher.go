@@ -6,6 +6,9 @@ import (
 
 func (st StateChar) Match(line *[]rune, i int) (match bool, skip int) {
 	skip = 1
+	if i >= len(*line) {
+		return false, skip
+	}
 	r := (*line)[i]
 	switch st.Type {
 	case StateTypeAny:
@@ -23,6 +26,9 @@ func (st StateChar) Match(line *[]rune, i int) (match bool, skip int) {
 
 func (st StateGroup) Match(line *[]rune, i int) (match bool, skip int) {
 	skip = 1
+	if i >= len(*line) {
+		return false, skip
+	}
 	r := (*line)[i]
 	switch st.Type {
 	case StateTypeGroupPositive:
@@ -49,13 +55,13 @@ func (st StateStart) Match(line *[]rune, i int) (match bool, skip int) {
 }
 
 func (st StateEnd) Match(line *[]rune, i int) (match bool, skip int) {
-	return i == len(*line)-1, 0
+	return i == len(*line), 0
 }
 
 func (st StateTree) Match(line *[]rune) bool {
-	for i := 0; i < len(*line); i++ {
+	for i := 0; i <= len(*line); i++ {
 		st := st
-		for j := i; j < len(*line); {
+		for j := i; j <= len(*line); {
 			match, skip := st.State.Match(line, j)
 			if !match {
 				break
