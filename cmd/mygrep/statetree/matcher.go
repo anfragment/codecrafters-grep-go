@@ -68,7 +68,7 @@ func (st StateTree) Match(line *[]rune) bool {
 
 func match(st StateTree, line *[]rune, i int) bool {
 	good, skip := st.State.Match(line, i)
-	if !good {
+	if !good && st.Quantifier != StateTreeZeroOrMore {
 		return false
 	}
 	if len(st.Children) == 0 {
@@ -82,7 +82,10 @@ func match(st StateTree, line *[]rune, i int) bool {
 		st.Quantifier = StateTreeZeroOrMore
 		return match(*st.Children[0], line, i+skip) || match(st, line, i+skip)
 	case StateTreeZeroOrMore:
-		return match(*st.Children[0], line, i+skip) || match(*st.Children[0], line, i) || match(st, line, i+skip)
+		if !good {
+			return match(*st.Children[0], line, i)
+		}
+		return match(*st.Children[0], line, i+skip) || match(st, line, i+skip)
 	default:
 		return false
 	}
