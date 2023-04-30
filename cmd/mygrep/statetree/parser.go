@@ -65,6 +65,19 @@ func compile(re []rune, i int) (st *StateTree, err error) {
 	}
 
 	if i+1 < len(re) {
+		switch re[i+1] {
+		case '*':
+			st.Quantifier = StateTreeZeroOrMore
+			i++
+		case '+':
+			st.Quantifier = StateTreeOneOrMore
+			i++
+		default:
+			st.Quantifier = StateTreeOne
+		}
+	}
+
+	if i+1 < len(re) {
 		child, err := compile(re, i+1)
 		if err != nil {
 			return nil, err

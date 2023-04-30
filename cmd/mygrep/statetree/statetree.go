@@ -32,7 +32,14 @@ type State interface {
 	Match(*[]rune, int) (bool, int)
 }
 
+const (
+	StateTreeOne = iota
+	StateTreeOneOrMore
+	StateTreeZeroOrMore
+)
+
 type StateTree struct {
-	State    State
-	Children []*StateTree
+	State      State
+	Quantifier int
+	Children   []*StateTree
 }
