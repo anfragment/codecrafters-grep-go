@@ -1,4 +1,4 @@
-package statetree
+package regexp
 
 import (
 	"unicode"
@@ -56,37 +56,53 @@ func (st StateEnd) Match(line *[]rune, i int) (bool, int) {
 	return i == len(*line), 0
 }
 
-func (st StateTree) Match(line *[]rune) bool {
-	for i := 0; i <= len(*line); i++ {
-		good := match(st, line, i)
+func (st StateAlternation) Match(line *[]rune, i int) (bool, int) {
+	for _, child := range st.Children {
+		good, skip := child.Match(line, i)
 		if good {
-			return true
+			return true, skip
 		}
 	}
-	return false
+	return false, -1
 }
 
-func match(st StateTree, line *[]rune, i int) bool {
+func (st StateTree) Match(line *[]rune, i int) (bool, int) {
+	for ; i <= len(*line); i++ {
+		good := match(&st, line, i)
+		if good {
+			return true, i
+		}
+	}
+	return false, -1
+}
+
+func match(st *StateTree, line *[]rune, i int) bool {
 	good, skip := st.State.Match(line, i)
 	if !good && st.Quantifier != StateTreeZeroOrMore {
 		return false
 	}
-	if len(st.Children) == 0 {
+	if st.Child == nil {
 		return true
 	}
+
 	switch st.Quantifier {
 	case StateTreeOne:
-		return match(*st.Children[0], line, i+skip)
+		return match(st.Child, line, i+skip)
 	case StateTreeOneOrMore:
 		st := st
 		st.Quantifier = StateTreeZeroOrMore
-		return match(*st.Children[0], line, i+skip) || match(st, line, i+skip)
+		return match(st.Child, line, i+skip) || match(st, line, i+skip)
 	case StateTreeZeroOrMore:
 		if !good {
-			return match(*st.Children[0], line, i)
+			return match(st.Child, line, i)
 		}
-		return match(*st.Children[0], line, i+skip) || match(st, line, i+skip)
+		return match(st.Child, line, i+skip) || match(st, line, i+skip)
 	default:
 		return false
 	}
+}
+
+func (r Regexp) Match(line *[]rune) bool {
+	match, _ := r.Root.Match(line, 0)
+	return match
 }

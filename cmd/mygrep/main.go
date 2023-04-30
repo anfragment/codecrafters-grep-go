@@ -9,7 +9,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/codecrafters-io/grep-starter-go/cmd/mygrep/statetree"
+	"github.com/codecrafters-io/grep-starter-go/cmd/mygrep/regexp"
 )
 
 // Usage: echo <input_text> | your_grep.sh -E <pattern>
@@ -41,10 +41,11 @@ func main() {
 }
 
 func matchLine(line []byte, pattern string) (bool, error) {
-	st, err := statetree.NewStateTree(pattern)
+	re, err := regexp.NewRegexp(pattern)
 	if err != nil {
-		return false, fmt.Errorf("parse pattern: %w", err)
+		return false, fmt.Errorf("regexp compilation: %w", err)
 	}
 	runes := bytes.Runes(line)
-	return st.Match(&runes), nil
+	match := re.Match(&runes)
+	return match, nil
 }
